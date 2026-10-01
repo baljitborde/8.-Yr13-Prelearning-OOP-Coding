@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Designing Classes &amp; Writing OOP Code – Year 13 Pre-learning | CIE 9618</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;padding:0;background:#f5f5f5;font-family:'Lato',sans-serif;font-size:14pt;color:#333333;line-height:1.65;}
+
+.opt{display:block;font-family:'Lato',sans-serif;font-size:14pt;padding:11px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#ffffff;color:#333333;cursor:pointer;margin-bottom:10px;line-height:1.4;user-select:none;-webkit-user-select:none;transition:background 0.12s,border-color 0.12s;}
+.opt:hover{background:#e3f2fd;border-color:#007BA6;}
+.opt.selected{background:#e3f2fd;border-color:#007BA6;font-weight:700;}
+.opt.correct{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;font-weight:700;pointer-events:none;cursor:default;}
+.opt.wrong{background:#ffebee!important;border-color:#C62828!important;color:#7f0000!important;pointer-events:none;cursor:default;}
+.opt.reveal{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;font-weight:700;pointer-events:none;cursor:default;}
+.opt.locked{pointer-events:none;cursor:default;}
+
+.wopt{display:inline-block;font-family:'Courier New',Courier,monospace;font-size:13pt;font-weight:700;padding:8px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#ffffff;color:#333333;cursor:pointer;margin:4px 6px 4px 0;line-height:1.4;user-select:none;-webkit-user-select:none;transition:background 0.12s,border-color 0.12s;}
+.wopt:hover{background:#e3f2fd;border-color:#007BA6;}
+.wopt.selected{background:#e3f2fd;border-color:#007BA6;color:#007BA6;}
+.wopt.correct{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;pointer-events:none;}
+.wopt.wrong{background:#ffebee!important;border-color:#C62828!important;color:#7f0000!important;pointer-events:none;}
+.wopt.reveal{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;pointer-events:none;}
+.wopt.locked{pointer-events:none;}
+
+.fb{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:14px;}
+.fb-ok{background:#e8f5e9;color:#1b5e20;border:1px solid #81c784;}
+.fb-bad{background:#ffebee;color:#7f0000;border:1px solid #ef9a9a;}
+
+.tf-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;padding:12px 16px;background:#fff;border:1px solid #d0d0d0;border-radius:6px;}
+.tf-stmt{flex:1;font-family:'Lato',sans-serif;font-size:14pt;color:#333;line-height:1.5;}
+.tf-btns{display:flex;gap:8px;flex-shrink:0;margin-top:2px;}
+.tf-btn{font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:7px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#fff;color:#333;cursor:pointer;}
+.tf-btn:hover{background:#e3f2fd;border-color:#007BA6;}
+.tf-btn.ok{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;pointer-events:none;}
+.tf-btn.bad{background:#ffebee;border-color:#C62828;color:#7f0000;pointer-events:none;}
+.tf-btn.show{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;pointer-events:none;}
+.tf-row.done .tf-btn{pointer-events:none;}
+.tf-row{flex-wrap:wrap;}
+.tf-row > div:not(.tf-stmt):not(.tf-btns){flex-basis:100%;}
+
+.match-row{display:grid;grid-template-columns:200px 1fr;gap:8px;margin-bottom:8px;align-items:center;}
+.match-term{font-family:'Courier New',monospace;font-size:13pt;font-weight:700;padding:9px 12px;background:#1e1e2e;border-radius:6px;color:#a6e3a1;text-align:center;line-height:1.4;}
+.match-sel{font-family:'Lato',sans-serif;font-size:13pt;padding:9px 12px;border:2px solid #d0d0d0;border-radius:6px;background:#fff;color:#333;width:100%;cursor:pointer;}
+.match-sel:focus{outline:none;border-color:#007BA6;}
+.match-row.ok .match-sel{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;}
+.match-row.bad .match-sel{background:#ffebee;border-color:#C62828;color:#7f0000;}
+.match-btn{display:inline-block;font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:8px 22px;border:2px solid #007BA6;border-radius:6px;background:#007BA6;color:#fff;cursor:pointer;margin-top:12px;}
+.match-btn:hover{background:#005f80;}
+.match-btn:disabled{background:#b3d4e8;border-color:#b3d4e8;cursor:default;}
+.match-result{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:12px;}
+
+.drag-bank{display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:#f0f8ff;border:2px dashed #b3d4e8;border-radius:6px;min-height:52px;margin-bottom:12px;}
+.drag-chip{font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:7px 16px;border:2px solid #007BA6;border-radius:6px;background:#e3f2fd;color:#007BA6;cursor:grab;white-space:nowrap;user-select:none;-webkit-user-select:none;}
+.drag-chip:active{cursor:grabbing;opacity:0.7;}
+.drag-chip.locked{cursor:default;pointer-events:none;opacity:0.75;}
+.drop-zone{display:inline-flex;align-items:center;justify-content:center;min-width:130px;padding:4px 8px;border-bottom:3px solid #007BA6;background:#fafafa;font-family:'Lato',sans-serif;font-size:12pt;color:#C62828;font-weight:700;vertical-align:middle;text-align:center;min-height:28px;}
+.drop-zone.drag-over{background:#e3f2fd;border-bottom-color:#C62828;}
+.sort-zone{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:6px;min-height:76px;}
+.check-btn{display:inline-block;font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:8px 22px;border:2px solid #007BA6;border-radius:6px;background:#007BA6;color:#fff;cursor:pointer;margin-top:12px;}
+.check-btn:hover{background:#005f80;}
+.check-btn:disabled{background:#b3d4e8;border-color:#b3d4e8;cursor:default;}
+.drag-result{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:12px;}
+
+code{font-family:'Courier New',monospace;background:#f0f0f0;padding:1px 6px;border-radius:3px;font-size:13pt;}
+.cx-tbl{border-collapse:collapse;width:100%;font-size:13pt;}
+.cx-tbl th{background:#007BA6;color:#fff;padding:9px 14px;border:1px solid #005f80;text-align:center;}
+.cx-tbl td{border:1px solid #d0d0d0;padding:8px 14px;text-align:left;vertical-align:top;}
+.cx-tbl tr:nth-child(even) td{background:#f0f8ff;}
+.code{margin:0;background:#1e1e2e;border-radius:8px;padding:16px 20px;font-family:'Courier New',monospace;font-size:12pt;line-height:1.85;color:#cdd6f4;white-space:pre;overflow-x:auto;}
+.code-lbl{font-size:11pt;font-weight:700;color:#6c7086;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;font-family:'Lato',sans-serif;white-space:normal;}
+.k{color:#f38ba8;}.v{color:#fab387;}.f{color:#a6e3a1;}.cm{color:#6c7086;}.s{color:#f9e2af;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.rec{display:flex;gap:4px;margin-bottom:4px;font-family:'Courier New',monospace;font-size:11pt;}
+.rec span{background:#fff;border:1px solid #b3d4e8;border-radius:3px;padding:2px 6px;}
+.rec span.key{background:#fff3e0;border-color:#e65100;font-weight:700;color:#e65100;}
+.rec span.addr{background:#1e1e2e;color:#fab387;border-color:#1e1e2e;min-width:34px;text-align:center;}
+.rec span.empty{color:#aaa;font-style:italic;}
+.slot-line{font-family:'Courier New',monospace;font-size:12pt;color:#cdd6f4;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.slot-line .ln{color:#6c7086;min-width:22px;text-align:right;}
+.drop-zone .drag-chip{white-space:normal;}
+.g2w{grid-template-columns:1.2fr 1fr;}
+@media (max-width:720px){
+  .g2,.g3,.g2w{grid-template-columns:1fr;}
+  .match-row{grid-template-columns:1fr;}
+  .tf-row{flex-direction:column;}
+}
+.cls{border:2px solid #007BA6;border-radius:6px;background:#fff;font-family:'Courier New',monospace;font-size:12pt;overflow:hidden;}
+.cls-h{background:#007BA6;color:#fff;font-weight:700;text-align:center;padding:6px 10px;font-family:'Lato',sans-serif;font-size:13pt;}
+.cls-s{padding:6px 12px;border-top:1px solid #b3d4e8;line-height:1.7;}
+.priv{color:#C62828;font-weight:700;}.pub{color:#1b5e20;font-weight:700;}
+.term{font-weight:700;color:#007BA6;}
+.g2>*,.g3>*{min-width:0;}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;">
+<div style="max-width:960px;margin:0 auto;padding:0 0 80px;">
+
+<!-- HEADER -->
+<div style="background:#007BA6;padding:32px 40px 28px;">
+  <div style="font-size:11pt;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;">CIE A-Level Computer Science 9618 &bull; Unit 4 &bull; Topic 20.1</div>
+  <div style="font-size:24pt;font-weight:700;color:#ffffff;margin:0 0 6px;">Object-Oriented Programming: Designing Classes &amp; Writing OOP Code</div>
+  <div style="font-size:14pt;color:rgba(255,255,255,0.88);">Pre-learning &nbsp;|&nbsp; Year 13 Computer Science</div>
+  <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;">
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 90 minutes</span>
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 6 sections</span>
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 21 interactive activities</span>
+  </div>
+</div>
+
+<!-- CONTENTS -->
+<div style="background:#ffffff;border-bottom:1px solid #d0d0d0;padding:20px 40px;">
+  <div style="font-size:12pt;font-weight:700;color:#007BA6;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Contents</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>From Problem to Classes</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>Designing a Class</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>Writing the Class in Python</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>Designing with Inheritance</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div>Designing with Containment</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">6</div>Putting It All Together</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&#10003;</div>Summary</div>
+  </div>
+</div>
+
+<div style="padding:40px 40px 0;">
+
+<!-- ═══════════════════════════════════════════
+     SECTION 1 — FROM PROBLEM TO CLASSES
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">From Problem to Classes</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~15 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">In the last pre-learning you met the vocabulary of OOP. Now you will use it to <strong>solve a problem</strong>. Before any code is written, a programmer reads the problem description and decides which <strong>classes</strong> are needed, what <strong>data</strong> each one must store and what each one must be able to <strong>do</strong>. Getting this design right makes the code much easier to write.</p>
+
+    <div style="font-size:13pt;font-weight:700;color:#007BA6;margin-bottom:10px;">The scenario used throughout this page</div>
+    <div style="border:2px dashed #007BA6;background:#f0f8ff;border-radius:6px;padding:14px 18px;margin-bottom:16px;font-size:13.5pt;">
+      A school <u>library</u> lends <u>books</u> and <u>DVDs</u> to students. Every item has a <u>title</u> and a unique <u>item ID</u>, and the library must record whether it is currently <u>on loan</u>. Books also have an <u>author</u>; DVDs have a <u>running time</u> in minutes. Books can be <em>borrowed</em> for 21 days and DVDs for 7 days. Staff need to <em>add</em> new items, <em>find</em> an item by its ID, let students <em>borrow</em> and <em>return</em> items, and <em>count</em> how many items are on loan.
+    </div>
+
+    <div class="g2" style="margin-bottom:16px;">
+      <div style="background:#e3f2fd;border-radius:8px;padding:16px 18px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;font-size:15pt;margin-bottom:8px;">Nouns &rarr; classes or attributes</div>
+        <p style="margin:0;font-size:13pt;">A noun that has its <strong>own data and behaviour</strong> becomes a <strong>class</strong> (library, book, DVD). A noun that is just a <strong>single value</strong> describing something becomes an <strong>attribute</strong> (title, item ID, author, on loan).</p>
+      </div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:16px 18px;border-top:4px solid #388e3c;">
+        <div style="font-weight:700;color:#388e3c;font-size:15pt;margin-bottom:8px;">Verbs &rarr; methods</div>
+        <p style="margin:0;font-size:13pt;">Actions in the description become <strong>methods</strong> of the class that performs them or owns the data: <em>borrow</em> and <em>return</em> belong to an item; <em>add</em>, <em>find</em> and <em>count</em> belong to the library.</p>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table class="cx-tbl">
+        <tr><th>Word in scenario</th><th>Type of word</th><th>Becomes…</th><th>Reason</th></tr>
+        <tr><td>library</td><td>noun</td><td><strong>class</strong> Library</td><td>Holds many items and has its own actions</td></tr>
+        <tr><td>book, DVD</td><td>nouns</td><td><strong>classes</strong> Book, DVD</td><td>Each has several pieces of data and behaviour</td></tr>
+        <tr><td>title, item ID, on loan</td><td>nouns</td><td><strong>attributes</strong></td><td>Single values that describe an item</td></tr>
+        <tr><td>borrow, return</td><td>verbs</td><td><strong>methods</strong> of an item</td><td>They change the item's own on-loan status</td></tr>
+        <tr><td>add, find, count</td><td>verbs</td><td><strong>methods</strong> of Library</td><td>They work on the collection of items</td></tr>
+      </table>
+    </div>
+    <div style="border-left:4px solid #9966FF;background:#f3e5f5;padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:14px;">
+      <strong style="color:#9966FF;">Ignore the noise:</strong> not every noun becomes part of the design. "School" and "students" are mentioned, but the program never stores any data about them, so they are not needed here.
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">CIE 9618 Specification (20.1):</strong> You need to understand how to solve a problem by designing appropriate classes, and be able to write code that demonstrates the use of OOP.
+    </div>
+  </div>
+
+  <!-- Activity 1 — match -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9654; Activity 1 — Match the term to its definition</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Use the dropdowns to match each design term to its definition.</div>
+    <div id="match1">
+      <div class="match-row"><div class="match-term">Noun analysis</div><select class="match-sel" data-ans="noun"><option value="">— choose —</option><option value="diag">A drawing showing each class's name, attributes and methods</option><option value="noun">Picking out the nouns and verbs in a problem to find classes, attributes and methods</option><option value="dtype">The kind of value an attribute holds, e.g. STRING or INTEGER</option><option value="mod">Marks a member as private (-) or public (+)</option><option value="rel">A link between classes such as "is-a" or "has-a"</option></select></div>
+      <div class="match-row"><div class="match-term">Class diagram</div><select class="match-sel" data-ans="diag"><option value="">— choose —</option><option value="diag">A drawing showing each class's name, attributes and methods</option><option value="noun">Picking out the nouns and verbs in a problem to find classes, attributes and methods</option><option value="dtype">The kind of value an attribute holds, e.g. STRING or INTEGER</option><option value="mod">Marks a member as private (-) or public (+)</option><option value="rel">A link between classes such as "is-a" or "has-a"</option></select></div>
+      <div class="match-row"><div class="match-term">Data type</div><select class="match-sel" data-ans="dtype"><option value="">— choose —</option><option value="diag">A drawing showing each class's name, attributes and methods</option><option value="noun">Picking out the nouns and verbs in a problem to find classes, attributes and methods</option><option value="dtype">The kind of value an attribute holds, e.g. STRING or INTEGER</option><option value="mod">Marks a member as private (-) or public (+)</option><option value="rel">A link between classes such as "is-a" or "has-a"</option></select></div>
+      <div class="match-row"><div class="match-term">Access modifier</div><select class="match-sel" data-ans="mod"><option value="">— choose —</option><option value="diag">A drawing showing each class's name, attributes and methods</option><option value="noun">Picking out the nouns and verbs in a problem to find classes, attributes and methods</option><option value="dtype">The kind of value an attribute holds, e.g. STRING or INTEGER</option><option value="mod">Marks a member as private (-) or public (+)</option><option value="rel">A link between classes such as "is-a" or "has-a"</option></select></div>
+      <div class="match-row"><div class="match-term">Relationship</div><select class="match-sel" data-ans="rel"><option value="">— choose —</option><option value="diag">A drawing showing each class's name, attributes and methods</option><option value="noun">Picking out the nouns and verbs in a problem to find classes, attributes and methods</option><option value="dtype">The kind of value an attribute holds, e.g. STRING or INTEGER</option><option value="mod">Marks a member as private (-) or public (+)</option><option value="rel">A link between classes such as "is-a" or "has-a"</option></select></div>
+    </div>
+    <button class="match-btn" id="match1-btn" onclick="checkMatch1()">&#10003; Check my answers</button>
+    <div class="match-result" id="match1-res"></div>
+  </div>
+
+  <!-- Activity 2 — 3-column sort -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#8644; Activity 2 — Sort: class, attribute or method?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">Read the new scenario, then drag each word into the part of the design it should become.</div>
+    <div style="border:2px dashed #388e3c;background:#f0f8f0;border-radius:6px;padding:12px 16px;margin-bottom:12px;font-size:13pt;">A gym has <u>members</u> and <u>classes</u> (sessions). Each member has a <u>name</u> and a <u>membership number</u>. Each session has a <u>start time</u> and a <u>maximum size</u>. Members can <em>book</em> a place on a session and <em>cancel</em> a booking.</div>
+    <div class="drag-bank" id="bank2">
+      <div class="drag-chip" draggable="true">cancel</div>
+      <div class="drag-chip" draggable="true">Member</div>
+      <div class="drag-chip" draggable="true">start time</div>
+      <div class="drag-chip" draggable="true">name</div>
+      <div class="drag-chip" draggable="true">Session</div>
+      <div class="drag-chip" draggable="true">book</div>
+      <div class="drag-chip" draggable="true">maximum size</div>
+    </div>
+    <div class="g3" style="margin-bottom:12px;">
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#007BA6;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Class</div>
+        <div id="sort2-cls" class="sort-zone drag-bank" style="border-color:#007BA6;background:#f0f8ff;min-height:110px;flex-direction:column;"></div>
+      </div>
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Attribute</div>
+        <div id="sort2-att" class="sort-zone drag-bank" style="border-color:#e65100;background:#fffaf3;min-height:110px;flex-direction:column;"></div>
+      </div>
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#388e3c;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Method</div>
+        <div id="sort2-met" class="sort-zone drag-bank" style="border-color:#388e3c;background:#f0f8f0;min-height:110px;flex-direction:column;"></div>
+      </div>
+    </div>
+    <button class="check-btn" id="btn2" onclick="checkSort2()">&#10003; Check my sort</button>
+    <div class="drag-result" id="res2"></div>
+  </div>
+
+  <!-- Activity 3 — MCQ correct=c -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 3 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">In the library scenario, why is "author" designed as an <strong>attribute</strong> of Book rather than as a separate class?</div>
+    <div id="opts3">
+      <div class="opt" onclick="pickOpt(3,'a',this)">a) Because every noun in a scenario must become an attribute</div>
+      <div class="opt" onclick="pickOpt(3,'b',this)">b) Because classes can only be made for physical objects</div>
+      <div class="opt" onclick="pickOpt(3,'c',this)">c) Because the program only needs to store one value about the author (their name) and the author has no behaviour of its own</div>
+      <div class="opt" onclick="pickOpt(3,'d',this)">d) Because attributes run faster than classes</div>
+    </div>
+    <div class="fb" id="fb3"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 2 — DESIGNING A CLASS
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Designing a Class</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~15 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">Once the classes are chosen, each one is designed in detail. We start with a single <strong>Book</strong> class (DVDs are added in Section 4). For each class, decide:</p>
+    <div class="g3" style="margin-bottom:16px;">
+      <div style="background:#e3f2fd;border-radius:6px;padding:14px 16px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;margin-bottom:6px;">1. Attributes &amp; data types</div>
+        <div style="font-size:13pt;">What must each object store, and what type is each value? Make every attribute <strong>private</strong>.</div>
+      </div>
+      <div style="background:#e3f2fd;border-radius:6px;padding:14px 16px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;margin-bottom:6px;">2. Constructor</div>
+        <div style="font-size:13pt;">Which values are passed in when the object is made, and which start with a fixed default value?</div>
+      </div>
+      <div style="background:#e3f2fd;border-radius:6px;padding:14px 16px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;margin-bottom:6px;">3. Methods</div>
+        <div style="font-size:13pt;">Which getters and setters are needed, and which other methods carry out the actions in the scenario?</div>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-bottom:16px;align-items:start;">
+      <div class="cls">
+        <div class="cls-h">Book</div>
+        <div class="cls-s"><span class="priv">-</span> Title : STRING<br><span class="priv">-</span> ItemID : STRING<br><span class="priv">-</span> Author : STRING<br><span class="priv">-</span> OnLoan : BOOLEAN</div>
+        <div class="cls-s"><span class="pub">+</span> Constructor(Title, ItemID, Author)<br><span class="pub">+</span> GetTitle() : STRING<br><span class="pub">+</span> GetAuthor() : STRING<br><span class="pub">+</span> IsOnLoan() : BOOLEAN<br><span class="pub">+</span> Borrow() : BOOLEAN<br><span class="pub">+</span> ReturnBook()</div>
+      </div>
+      <div style="background:#f5f5f5;border:1px solid #d0d0d0;border-radius:8px;padding:16px 18px;">
+        <div style="font-size:13pt;font-weight:700;color:#333;margin-bottom:8px;">Design decisions</div>
+        <ul style="margin:0;padding-left:1.2em;font-size:13pt;line-height:1.8;">
+          <li><strong>ItemID is a STRING</strong>, not an INTEGER — it is an identifier like "B01", never used in calculations.</li>
+          <li><strong>OnLoan is a BOOLEAN</strong> — an item is either on loan or not.</li>
+          <li>The constructor takes Title, ItemID and Author, but <strong>OnLoan always starts as False</strong>, so it is not a parameter.</li>
+          <li><strong>Borrow()</strong> returns TRUE if the loan worked, or FALSE if the book was already on loan.</li>
+          <li>No setter for Title or ItemID — they should never change after the book is created.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-left:4px solid #9966FF;background:#f3e5f5;padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:14px;">
+      <strong style="color:#9966FF;">Reading a class diagram line:</strong> <code>+ Borrow() : BOOLEAN</code> means a <em>public</em> method called Borrow, taking no parameters (other than self) and <em>returning</em> a Boolean. <code>- OnLoan : BOOLEAN</code> means a <em>private</em> attribute holding a Boolean.
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">Good design rules:</strong> keep attributes private; give every attribute that outside code needs to read a getter; only add setters where a value really should change; and put each method in the class that owns the data it uses.
+    </div>
+  </div>
+
+  <!-- Activity 4 — word chip correct=d -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 4 — Fill in the gap</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:16px;line-height:1.6;">A gym Session class needs an attribute <code>IsFull</code> that records whether the session has reached its maximum size. The most suitable data type is <span style="background:#1e1e2e;color:#fab387;font-family:'Courier New',monospace;padding:2px 10px;border-radius:4px;font-size:13pt;">&#9744;</span>.</div>
+    <div id="opts4w">
+      <span class="wopt" onclick="pickWopt(4,'a',this)">STRING</span>
+      <span class="wopt" onclick="pickWopt(4,'b',this)">INTEGER</span>
+      <span class="wopt" onclick="pickWopt(4,'c',this)">REAL</span>
+      <span class="wopt" onclick="pickWopt(4,'d',this)">BOOLEAN</span>
+    </div>
+    <div class="fb" id="fb4"></div>
+  </div>
+
+  <!-- Activity 5 — MCQ correct=a -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 5 — Multiple choice — read the diagram</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">A class diagram for a Member class contains the line <code>+ GetFines() : REAL</code>. Which Python method matches it?</div>
+    <div id="opts5">
+      <div class="opt" onclick="pickOpt(5,'a',this)">a) <code>def GetFines(self): return self.__Fines</code> — a public method returning a real number</div>
+      <div class="opt" onclick="pickOpt(5,'b',this)">b) <code>self.__GetFines = 0.0</code> — a private attribute holding a real number</div>
+      <div class="opt" onclick="pickOpt(5,'c',this)">c) <code>def __GetFines(self): return self.__Fines</code> — a private method</div>
+      <div class="opt" onclick="pickOpt(5,'d',this)">d) <code>def GetFines(self, Fines): self.__Fines = Fines</code> — a setter</div>
+    </div>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <!-- Activity 6 — TF -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 6 — True or False?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Click True or False for each statement about designing the Book class.</div>
+    <div class="tf-row" id="tf1">
+      <div class="tf-stmt">Every attribute of a class must be passed in as a parameter to the constructor.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(1,true,false)">True</button><button class="tf-btn" onclick="doTF(1,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf2">
+      <div class="tf-stmt">An ID such as "B01" is best stored as a STRING because it is never used in arithmetic.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(2,true,true)">True</button><button class="tf-btn" onclick="doTF(2,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf3">
+      <div class="tf-stmt">A class must have a setter for every attribute it contains.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(3,true,false)">True</button><button class="tf-btn" onclick="doTF(3,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf4">
+      <div class="tf-stmt">In a class diagram, <code>-</code> before a member means private and <code>+</code> means public.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(4,true,true)">True</button><button class="tf-btn" onclick="doTF(4,false,true)">False</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 3 — WRITING THE CLASS IN PYTHON
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Writing the Class in Python</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~20 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">A good class diagram turns into code almost line by line. Each part of the diagram has a matching pattern in Python:</p>
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table class="cx-tbl">
+        <tr><th>In the class diagram</th><th>In Python</th></tr>
+        <tr><td><code>Book</code> (class name)</td><td><code>class Book:</code></td></tr>
+        <tr><td><code>+ Constructor(Title, ItemID, Author)</code></td><td><code>def __init__(self, Title, ItemID, Author):</code></td></tr>
+        <tr><td><code>- Title : STRING</code></td><td><code>self.__Title = Title</code> inside the constructor</td></tr>
+        <tr><td><code>- OnLoan : BOOLEAN</code> (default value)</td><td><code>self.__OnLoan = False</code> inside the constructor</td></tr>
+        <tr><td><code>+ GetTitle() : STRING</code></td><td><code>def GetTitle(self):</code> with <code>return self.__Title</code></td></tr>
+        <tr><td><code>+ ReturnBook()</code> (no return type)</td><td><code>def ReturnBook(self):</code> — a procedure, no return value</td></tr>
+      </table>
+    </div>
+
+    <div class="g2 g2w" style="margin-bottom:16px;align-items:start;">
+      <div class="code" style="font-size:11pt;"><div class="code-lbl">Python — the Book class</div><span class="k">class</span> <span class="f">Book</span>:
+    <span class="k">def</span> <span class="f">__init__</span>(self, Title, ItemID, Author):
+        self.__Title = Title
+        self.__ItemID = ItemID
+        self.__Author = Author
+        self.__OnLoan = False  <span class="cm"># default</span>
+
+    <span class="k">def</span> <span class="f">GetTitle</span>(self):
+        <span class="k">return</span> self.__Title
+
+    <span class="k">def</span> <span class="f">GetAuthor</span>(self):
+        <span class="k">return</span> self.__Author
+
+    <span class="k">def</span> <span class="f">IsOnLoan</span>(self):
+        <span class="k">return</span> self.__OnLoan
+
+    <span class="k">def</span> <span class="f">Borrow</span>(self):
+        <span class="k">if</span> self.__OnLoan:
+            <span class="k">return</span> False  <span class="cm"># on loan</span>
+        self.__OnLoan = True
+        <span class="k">return</span> True
+
+    <span class="k">def</span> <span class="f">ReturnBook</span>(self):
+        self.__OnLoan = False</div>
+      <div>
+        <div class="code" style="margin-bottom:12px;font-size:11pt;"><div class="code-lbl">Main program — using the class</div>MyBook = <span class="f">Book</span>(<span class="s">"Dune"</span>, <span class="s">"B01"</span>, <span class="s">"Herbert"</span>)
+<span class="k">if</span> MyBook.<span class="f">Borrow</span>():
+    <span class="f">print</span>(MyBook.<span class="f">GetTitle</span>(), <span class="s">"borrowed"</span>)
+<span class="k">else</span>:
+    <span class="f">print</span>(<span class="s">"Already on loan"</span>)
+MyBook.<span class="f">ReturnBook</span>()</div>
+        <div style="background:#f5f5f5;border:1px solid #d0d0d0;border-radius:8px;padding:14px 16px;">
+          <div style="font-size:13pt;font-weight:700;color:#333;margin-bottom:6px;">Things to notice</div>
+          <ul style="margin:0;padding-left:1.2em;font-size:12.5pt;line-height:1.8;">
+            <li>Every method has <code>self</code> as its first parameter.</li>
+            <li>Every attribute is written <code>self.__Name</code> — the double underscore makes it private.</li>
+            <li>Borrow() returns a value, so the main program can test it with <code>if</code>.</li>
+            <li>Methods are called on an <strong>object</strong> (MyBook), not on the class name.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div style="border-left:4px solid #e65100;background:#fff3e0;padding:12px 16px;border-radius:0 6px 6px 0;margin-bottom:14px;">
+      <strong style="color:#e65100;">Setters with validation:</strong> where a value may change, the setter checks it first. For example, a Session's maximum size must be positive: <code>def SetMaxSize(self, NewSize):</code> then <code>if NewSize &gt; 0: self.__MaxSize = NewSize</code>.
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">Exam tip:</strong> when asked to "write the class", examiners look for: the class header, a constructor with the correct parameters, every attribute declared private and initialised, and each requested method with the correct parameters and return value.
+    </div>
+  </div>
+
+  <!-- Activity 7 — drag code -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 7 — Complete the class from its diagram</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Use the class diagram to complete the <code>Session</code> class. Two chips are not needed.</div>
+    <div class="g2" style="margin-bottom:12px;align-items:start;">
+      <div class="cls">
+        <div class="cls-h">Session</div>
+        <div class="cls-s"><span class="priv">-</span> StartTime : STRING<br><span class="priv">-</span> MaxSize : INTEGER<br><span class="priv">-</span> Booked : INTEGER</div>
+        <div class="cls-s"><span class="pub">+</span> Constructor(StartTime, MaxSize)<br><span class="pub">+</span> GetStartTime() : STRING<br><span class="pub">+</span> AddBooking() : BOOLEAN</div>
+      </div>
+      <div style="font-size:12.5pt;color:#555;background:#f5f5f5;border:1px solid #d0d0d0;border-radius:8px;padding:12px 14px;">Booked counts the places taken and always starts at 0. AddBooking() adds one booking and returns True if there is space, otherwise it returns False.</div>
+    </div>
+    <div class="drag-bank" id="bank7">
+      <div class="drag-chip" draggable="true">self.__Booked = 0</div>
+      <div class="drag-chip" draggable="true">print(self.__StartTime)</div>
+      <div class="drag-chip" draggable="true">return self.__StartTime</div>
+      <div class="drag-chip" draggable="true">self.__Booked &lt; self.__MaxSize</div>
+      <div class="drag-chip" draggable="true">self.__Booked = MaxSize</div>
+      <div class="drag-chip" draggable="true">self.__Booked = self.__Booked + 1</div>
+    </div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:16px 20px;font-family:'Courier New',monospace;font-size:12.5pt;line-height:2.8;color:#cdd6f4;overflow-x:auto;">
+      class Session:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;def __init__(self, StartTime, MaxSize):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.__StartTime = StartTime<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.__MaxSize = MaxSize<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dz7a" class="drop-zone" style="min-width:200px;">?</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;def GetStartTime(self):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dz7b" class="drop-zone" style="min-width:220px;">?</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;def AddBooking(self):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if <span id="dz7c" class="drop-zone" style="min-width:260px;">?</span>:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dz7d" class="drop-zone" style="min-width:260px;">?</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return True<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return False
+    </div>
+    <button class="check-btn" id="btn7" onclick="checkDrop7()">&#10003; Check my answers</button>
+    <div class="drag-result" id="res7"></div>
+  </div>
+
+  <!-- Activity 8 — MCQ correct=b -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 8 — Multiple choice — trace the code</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">Using the Book class above, what is output?</div>
+    <div class="code" style="margin-bottom:14px;">B = <span class="f">Book</span>(<span class="s">"Holes"</span>, <span class="s">"B02"</span>, <span class="s">"Sachar"</span>)
+<span class="f">print</span>(B.<span class="f">Borrow</span>())
+<span class="f">print</span>(B.<span class="f">Borrow</span>())
+B.<span class="f">ReturnBook</span>()
+<span class="f">print</span>(B.<span class="f">IsOnLoan</span>())</div>
+    <div id="opts8">
+      <div class="opt" onclick="pickOpt(8,'a',this)">a) True, True, False</div>
+      <div class="opt" onclick="pickOpt(8,'b',this)">b) True, False, False</div>
+      <div class="opt" onclick="pickOpt(8,'c',this)">c) False, True, True</div>
+      <div class="opt" onclick="pickOpt(8,'d',this)">d) True, False, True</div>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <!-- Activity 9 — word chip correct=a -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 9 — Fill in the gap</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:16px;line-height:1.6;">A session's maximum size must be a positive number. Complete the setter's validation:<br><code>def SetMaxSize(self, NewSize):</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;if NewSize </code><span style="background:#1e1e2e;color:#fab387;font-family:'Courier New',monospace;padding:2px 10px;border-radius:4px;font-size:13pt;">&#9744;</span><code> 0:</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.__MaxSize = NewSize</code></div>
+    <div id="opts9w">
+      <span class="wopt" onclick="pickWopt(9,'a',this)">&gt;</span>
+      <span class="wopt" onclick="pickWopt(9,'b',this)">&lt;</span>
+      <span class="wopt" onclick="pickWopt(9,'c',this)">==</span>
+      <span class="wopt" onclick="pickWopt(9,'d',this)">=</span>
+    </div>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <!-- Activity 10 — TF -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 10 — True or False?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Click True or False for each statement about writing classes in Python.</div>
+    <div class="tf-row" id="tf5">
+      <div class="tf-stmt">Every method written inside a Python class needs <code>self</code> as its first parameter.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(5,true,true)">True</button><button class="tf-btn" onclick="doTF(5,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf6">
+      <div class="tf-stmt">A method shown in a class diagram with no return type, such as <code>+ ReturnBook()</code>, should end with a return statement that sends back a value.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(6,true,false)">True</button><button class="tf-btn" onclick="doTF(6,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf7">
+      <div class="tf-stmt">A default value such as <code>self.__OnLoan = False</code> is set inside the constructor.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(7,true,true)">True</button><button class="tf-btn" onclick="doTF(7,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf8">
+      <div class="tf-stmt"><code>Book.Borrow()</code> is the correct way to borrow the book stored in MyBook.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(8,true,false)">True</button><button class="tf-btn" onclick="doTF(8,false,false)">False</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 4 — DESIGNING WITH INHERITANCE
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Designing with Inheritance</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~15 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">The library also lends DVDs. A DVD has a title, an item ID and an on-loan status, and it can be borrowed and returned — exactly like a book. Writing a separate DVD class that repeats all this code would be wasteful. Instead, the design is <strong>refactored</strong>: everything that books and DVDs share moves into a <strong>superclass</strong>, and each subclass keeps only what is special about it.</p>
+
+    <div class="g2" style="margin-bottom:16px;align-items:start;">
+      <div>
+        <div class="cls" style="max-width:300px;margin:0 auto;">
+          <div class="cls-h">LibraryItem</div>
+          <div class="cls-s"><span class="priv">-</span> Title : STRING<br><span class="priv">-</span> ItemID : STRING<br><span class="priv">-</span> OnLoan : BOOLEAN</div>
+          <div class="cls-s"><span class="pub">+</span> Constructor(Title, ItemID)<br><span class="pub">+</span> GetTitle() : STRING<br><span class="pub">+</span> GetItemID() : STRING<br><span class="pub">+</span> IsOnLoan() : BOOLEAN<br><span class="pub">+</span> Borrow() : BOOLEAN<br><span class="pub">+</span> ReturnItem()<br><span class="pub">+</span> GetLoanDays() : INTEGER</div>
+        </div>
+        <div style="text-align:center;font-size:20pt;color:#007BA6;line-height:1.3;">&#9651;<br><span style="font-size:11pt;font-weight:700;">inherit from LibraryItem</span></div>
+        <div class="g2" style="gap:10px;">
+          <div class="cls"><div class="cls-h">Book</div><div class="cls-s"><span class="priv">-</span> Author : STRING</div><div class="cls-s"><span class="pub">+</span> GetAuthor()<br><span class="pub">+</span> GetLoanDays()</div></div>
+          <div class="cls"><div class="cls-h">DVD</div><div class="cls-s"><span class="priv">-</span> Minutes : INTEGER</div><div class="cls-s"><span class="pub">+</span> GetMinutes()<br><span class="pub">+</span> GetLoanDays()</div></div>
+        </div>
+      </div>
+      <div style="background:#f5f5f5;border:1px solid #d0d0d0;border-radius:8px;padding:16px 18px;">
+        <div style="font-size:13pt;font-weight:700;color:#333;margin-bottom:8px;">How the design was decided</div>
+        <ol style="margin:0;padding-left:1.3em;font-size:13pt;line-height:1.8;">
+          <li>List the attributes and methods of each class.</li>
+          <li>Anything that appears in <strong>both</strong> moves up into the superclass.</li>
+          <li>Anything only one class needs stays in that <strong>subclass</strong> (Author, Minutes).</li>
+          <li>Behaviour that is shared but <strong>works differently</strong> — the loan period — is given a default in the superclass and <strong>overridden</strong> in each subclass (21 days for books, 7 for DVDs).</li>
+          <li>Check the "is-a" test: a Book <em>is a</em> LibraryItem; a DVD <em>is a</em> LibraryItem. &#10003;</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="code" style="margin-bottom:16px;"><div class="code-lbl">Python — superclass and two subclasses</div><span class="k">class</span> <span class="f">LibraryItem</span>:
+    <span class="k">def</span> <span class="f">__init__</span>(self, Title, ItemID):
+        self.__Title = Title
+        self.__ItemID = ItemID
+        self.__OnLoan = False
+    <span class="cm"># GetTitle, GetItemID, IsOnLoan, Borrow and ReturnItem as before ...</span>
+    <span class="k">def</span> <span class="f">GetLoanDays</span>(self):
+        <span class="k">return</span> <span class="v">14</span>                    <span class="cm"># default</span>
+
+<span class="k">class</span> <span class="f">Book</span>(LibraryItem):
+    <span class="k">def</span> <span class="f">__init__</span>(self, Title, ItemID, Author):
+        <span class="f">super</span>().<span class="f">__init__</span>(Title, ItemID)
+        self.__Author = Author
+    <span class="k">def</span> <span class="f">GetAuthor</span>(self):
+        <span class="k">return</span> self.__Author
+    <span class="k">def</span> <span class="f">GetLoanDays</span>(self):           <span class="cm"># overrides</span>
+        <span class="k">return</span> <span class="v">21</span>
+
+<span class="k">class</span> <span class="f">DVD</span>(LibraryItem):
+    <span class="k">def</span> <span class="f">__init__</span>(self, Title, ItemID, Minutes):
+        <span class="f">super</span>().<span class="f">__init__</span>(Title, ItemID)
+        self.__Minutes = Minutes
+    <span class="k">def</span> <span class="f">GetMinutes</span>(self):
+        <span class="k">return</span> self.__Minutes
+    <span class="k">def</span> <span class="f">GetLoanDays</span>(self):           <span class="cm"># overrides</span>
+        <span class="k">return</span> <span class="v">7</span></div>
+    <div style="border-left:4px solid #9966FF;background:#f3e5f5;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#9966FF;">Benefit of this design:</strong> Borrow() and ReturnItem() are written once and work for every kind of item. Adding a new type later — say, Magazine with a 3-day loan — only needs a small subclass that overrides GetLoanDays().
+    </div>
+  </div>
+
+  <!-- Activity 11 — 3-col sort -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#8644; Activity 11 — Sort: where does each member belong?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">A sports centre has <code>Court</code> and <code>Pool</code> bookings. Both have a booking ID and a date and can be cancelled. Courts also record the sport played; pools record the number of lanes booked. Drag each member into the class where it should be written.</div>
+    <div class="drag-bank" id="bank11">
+      <div class="drag-chip" draggable="true">Lanes</div>
+      <div class="drag-chip" draggable="true">BookingID</div>
+      <div class="drag-chip" draggable="true">Sport</div>
+      <div class="drag-chip" draggable="true">Cancel()</div>
+      <div class="drag-chip" draggable="true">BookingDate</div>
+      <div class="drag-chip" draggable="true">GetLanes()</div>
+      <div class="drag-chip" draggable="true">GetSport()</div>
+    </div>
+    <div class="g3" style="margin-bottom:12px;">
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#007BA6;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Booking (superclass)</div>
+        <div id="sort11-sup" class="sort-zone drag-bank" style="border-color:#007BA6;background:#f0f8ff;min-height:110px;flex-direction:column;"></div>
+      </div>
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Court only</div>
+        <div id="sort11-court" class="sort-zone drag-bank" style="border-color:#e65100;background:#fffaf3;min-height:110px;flex-direction:column;"></div>
+      </div>
+      <div>
+        <div style="font-size:13pt;font-weight:700;color:#388e3c;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;">Pool only</div>
+        <div id="sort11-pool" class="sort-zone drag-bank" style="border-color:#388e3c;background:#f0f8f0;min-height:110px;flex-direction:column;"></div>
+      </div>
+    </div>
+    <button class="check-btn" id="btn11" onclick="checkSort11()">&#10003; Check my sort</button>
+    <div class="drag-result" id="res11"></div>
+  </div>
+
+  <!-- Activity 12 — drag code -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 12 — Write the new subclass</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">The library adds a <code>Magazine</code> class. A magazine is a LibraryItem with an extra private attribute IssueNo, and it can only be borrowed for 3 days. Complete the code. Three chips are not needed.</div>
+    <div class="drag-bank" id="bank12">
+      <div class="drag-chip" draggable="true">return 3</div>
+      <div class="drag-chip" draggable="true">Book</div>
+      <div class="drag-chip" draggable="true">super().__init__(Title, ItemID)</div>
+      <div class="drag-chip" draggable="true">self.__Title = Title</div>
+      <div class="drag-chip" draggable="true">LibraryItem</div>
+      <div class="drag-chip" draggable="true">return 21</div>
+      <div class="drag-chip" draggable="true">self.__IssueNo = IssueNo</div>
+    </div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:16px 20px;font-family:'Courier New',monospace;font-size:12.5pt;line-height:2.8;color:#cdd6f4;overflow-x:auto;">
+      class Magazine(<span id="dz12a" class="drop-zone">?</span>):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;def __init__(self, Title, ItemID, IssueNo):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dz12b" class="drop-zone" style="min-width:280px;">?</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dz12c" class="drop-zone" style="min-width:280px;">?</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;def GetLoanDays(self):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="dz12d" class="drop-zone">?</span>
+    </div>
+    <button class="check-btn" id="btn12" onclick="checkDrop12()">&#10003; Check my answers</button>
+    <div class="drag-result" id="res12"></div>
+  </div>
+
+  <!-- Activity 13 — MCQ correct=d -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 13 — Multiple choice — trace the code</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">Using the LibraryItem, Book and DVD classes above, what is output?</div>
+    <div class="code" style="margin-bottom:14px;">Items = [<span class="f">Book</span>(<span class="s">"Dune"</span>, <span class="s">"B01"</span>, <span class="s">"Herbert"</span>),
+         <span class="f">DVD</span>(<span class="s">"Up"</span>, <span class="s">"D01"</span>, <span class="v">96</span>),
+         <span class="f">LibraryItem</span>(<span class="s">"Map"</span>, <span class="s">"M01"</span>)]
+<span class="k">for</span> Item <span class="k">in</span> Items:
+    <span class="f">print</span>(Item.<span class="f">GetTitle</span>(), Item.<span class="f">GetLoanDays</span>())</div>
+    <div id="opts13">
+      <div class="opt" onclick="pickOpt(13,'a',this)">a) Dune 14 / Up 14 / Map 14</div>
+      <div class="opt" onclick="pickOpt(13,'b',this)">b) Dune 21 / Up 21 / Map 21</div>
+      <div class="opt" onclick="pickOpt(13,'c',this)">c) Dune 21 / Up 7 / then an error, because LibraryItem objects cannot be created</div>
+      <div class="opt" onclick="pickOpt(13,'d',this)">d) Dune 21 / Up 7 / Map 14</div>
+    </div>
+    <div class="fb" id="fb13"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 5 — DESIGNING WITH CONTAINMENT
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Designing with Containment</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~15 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">The final class in the design is <strong>Library</strong>. A library is not a kind of item — it <strong>has</strong> many items. So Library uses <strong>containment</strong>: it stores a list of LibraryItem objects as a private attribute, and its methods work through that list.</p>
+
+    <div class="g2" style="margin-bottom:16px;align-items:start;">
+      <div>
+        <div style="display:flex;align-items:center;justify-content:center;flex-wrap:wrap;font-size:10.5pt;">
+          <div class="cls" style="font-size:10.5pt;"><div class="cls-h">Library</div><div class="cls-s"><span class="priv">-</span> Items : list</div><div class="cls-s"><span class="pub">+</span> AddItem(NewItem)<br><span class="pub">+</span> FindItem(ItemID)<br><span class="pub">+</span> CountOnLoan() : INTEGER</div></div>
+          <svg width="60" height="40" viewBox="0 0 80 40" aria-label="aggregation link"><polygon points="2,20 14,12 26,20 14,28" fill="#fff" stroke="#007BA6" stroke-width="2"/><line x1="26" y1="20" x2="78" y2="20" stroke="#007BA6" stroke-width="2"/><text x="52" y="12" font-size="10" fill="#007BA6" text-anchor="middle" font-family="Lato,sans-serif">0..*</text></svg>
+          <div class="cls" style="font-size:10.5pt;"><div class="cls-h" style="font-size:11pt;">LibraryItem</div><div class="cls-s">…</div></div>
+        </div>
+        <div style="font-size:12.5pt;color:#555;margin-top:10px;">Because Book, DVD and Magazine all inherit from LibraryItem, the same list can hold any mixture of them.</div>
+      </div>
+      <div class="code" style="font-size:11pt;"><div class="code-lbl">Python — the Library class</div><span class="k">class</span> <span class="f">Library</span>:
+    <span class="k">def</span> <span class="f">__init__</span>(self):
+        self.__Items = []
+
+    <span class="k">def</span> <span class="f">AddItem</span>(self, NewItem):
+        self.__Items.<span class="f">append</span>(NewItem)
+
+    <span class="k">def</span> <span class="f">FindItem</span>(self, ItemID):
+        <span class="k">for</span> Item <span class="k">in</span> self.__Items:
+            <span class="k">if</span> Item.<span class="f">GetItemID</span>() == ItemID:
+                <span class="k">return</span> Item
+        <span class="k">return</span> None    <span class="cm"># not found</span>
+
+    <span class="k">def</span> <span class="f">CountOnLoan</span>(self):
+        Count = <span class="v">0</span>
+        <span class="k">for</span> Item <span class="k">in</span> self.__Items:
+            <span class="k">if</span> Item.<span class="f">IsOnLoan</span>():
+                Count = Count + <span class="v">1</span>
+        <span class="k">return</span> Count</div>
+    </div>
+
+    <div class="g2" style="margin-bottom:16px;">
+      <div style="background:#e3f2fd;border-radius:8px;padding:16px 18px;border-top:4px solid #007BA6;">
+        <div style="font-weight:700;color:#007BA6;font-size:14pt;margin-bottom:8px;">Objects talk through methods</div>
+        <p style="margin:0;font-size:13pt;">Library cannot read an item's private <code>__OnLoan</code> attribute. Instead it calls the item's public <code>IsOnLoan()</code> getter. Each class looks after its own data.</p>
+      </div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:16px 18px;border-top:4px solid #388e3c;">
+        <div style="font-weight:700;color:#388e3c;font-size:14pt;margin-bottom:8px;">Returning an object</div>
+        <p style="margin:0;font-size:13pt;"><code>FindItem()</code> returns the <strong>object itself</strong>, so the main program can call methods on it straight away: <code>Lib.FindItem("D01").Borrow()</code>. If nothing matches it returns <code>None</code>.</p>
+      </div>
+    </div>
+    <div style="border-left:4px solid #e65100;background:#fff3e0;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#e65100;">Watch out:</strong> in FindItem, <code>return None</code> must be <em>after</em> the loop. If it were inside the loop, the method would give up after checking only the first item.
+    </div>
+  </div>
+
+  <!-- Activity 14 — MCQ correct=c -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 14 — Multiple choice — trace the code</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">What is output by this code?</div>
+    <div class="code" style="margin-bottom:14px;">Lib = <span class="f">Library</span>()
+Lib.<span class="f">AddItem</span>(<span class="f">Book</span>(<span class="s">"Dune"</span>, <span class="s">"B01"</span>, <span class="s">"Herbert"</span>))
+Lib.<span class="f">AddItem</span>(<span class="f">DVD</span>(<span class="s">"Up"</span>, <span class="s">"D01"</span>, <span class="v">96</span>))
+<span class="f">print</span>(Lib.<span class="f">FindItem</span>(<span class="s">"X99"</span>))</div>
+    <div id="opts14">
+      <div class="opt" onclick="pickOpt(14,'a',this)">a) Dune — the first item in the list is returned</div>
+      <div class="opt" onclick="pickOpt(14,'b',this)">b) An IndexError, because X99 is not in the list</div>
+      <div class="opt" onclick="pickOpt(14,'c',this)">c) None — no item has the ID X99, so the loop finishes and None is returned</div>
+      <div class="opt" onclick="pickOpt(14,'d',this)">d) Up — the last item checked is returned</div>
+    </div>
+    <div class="fb" id="fb14"></div>
+  </div>
+
+  <!-- Activity 15 — order lines -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 15 — Put the method in order</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">A <code>Team</code> class contains a list of Player objects in <code>self.__Players</code>. Drag the lines into order to build a method that returns the total of every player's goals. The indentation is shown by the slots.</div>
+    <div class="drag-bank" id="bank15">
+      <div class="drag-chip" draggable="true">return Total</div>
+      <div class="drag-chip" draggable="true">for P in self.__Players:</div>
+      <div class="drag-chip" draggable="true">def TotalGoals(self):</div>
+      <div class="drag-chip" draggable="true">Total = Total + P.GetGoals()</div>
+      <div class="drag-chip" draggable="true">Total = 0</div>
+    </div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:16px 20px;overflow-x:auto;">
+      <div class="slot-line"><span class="ln">1</span><span id="dz15a" class="drop-zone" style="min-width:320px;">?</span></div>
+      <div class="slot-line"><span class="ln">2</span><span style="width:36px;"></span><span id="dz15b" class="drop-zone" style="min-width:284px;">?</span></div>
+      <div class="slot-line"><span class="ln">3</span><span style="width:36px;"></span><span id="dz15c" class="drop-zone" style="min-width:284px;">?</span></div>
+      <div class="slot-line"><span class="ln">4</span><span style="width:72px;"></span><span id="dz15d" class="drop-zone" style="min-width:248px;">?</span></div>
+      <div class="slot-line"><span class="ln">5</span><span style="width:36px;"></span><span id="dz15e" class="drop-zone" style="min-width:284px;">?</span></div>
+    </div>
+    <button class="check-btn" id="btn15" onclick="checkOrder15()">&#10003; Check my order</button>
+    <div class="drag-result" id="res15"></div>
+  </div>
+
+  <!-- Activity 16 — TF -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 16 — True or False?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Click True or False for each statement about the Library design.</div>
+    <div class="tf-row" id="tf9">
+      <div class="tf-stmt">Library should inherit from LibraryItem, because it works with library items.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(9,true,false)">True</button><button class="tf-btn" onclick="doTF(9,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf10">
+      <div class="tf-stmt">The Items list can hold Book, DVD and Magazine objects together, because they are all LibraryItems.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(10,true,true)">True</button><button class="tf-btn" onclick="doTF(10,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf11">
+      <div class="tf-stmt">CountOnLoan() can read <code>Item.__OnLoan</code> directly because it is inside a class.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(11,true,false)">True</button><button class="tf-btn" onclick="doTF(11,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf12">
+      <div class="tf-stmt">Because FindItem() returns an object, the main program can write <code>Lib.FindItem("B01").Borrow()</code>.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(12,true,true)">True</button><button class="tf-btn" onclick="doTF(12,false,true)">False</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 6 — PUTTING IT ALL TOGETHER
+══════════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">6</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Putting It All Together</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~10 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">A complete OOP solution has two parts: the <strong>class definitions</strong>, and a <strong>main program</strong> that creates objects and calls their methods to solve the problem.</p>
+    <div class="code" style="margin-bottom:16px;"><div class="code-lbl">Python — main program for the library system</div>Lib = <span class="f">Library</span>()
+Lib.<span class="f">AddItem</span>(<span class="f">Book</span>(<span class="s">"Dune"</span>, <span class="s">"B01"</span>, <span class="s">"Herbert"</span>))
+Lib.<span class="f">AddItem</span>(<span class="f">DVD</span>(<span class="s">"Up"</span>, <span class="s">"D01"</span>, <span class="v">96</span>))
+Lib.<span class="f">AddItem</span>(<span class="f">Book</span>(<span class="s">"Holes"</span>, <span class="s">"B02"</span>, <span class="s">"Sachar"</span>))
+
+SearchID = <span class="f">input</span>(<span class="s">"Enter item ID: "</span>)
+Item = Lib.<span class="f">FindItem</span>(SearchID)
+<span class="k">if</span> Item == None:
+    <span class="f">print</span>(<span class="s">"No item with that ID"</span>)
+<span class="k">elif</span> Item.<span class="f">Borrow</span>():
+    <span class="f">print</span>(Item.<span class="f">GetTitle</span>(), <span class="s">"is due back in"</span>, Item.<span class="f">GetLoanDays</span>(), <span class="s">"days"</span>)
+<span class="k">else</span>:
+    <span class="f">print</span>(Item.<span class="f">GetTitle</span>(), <span class="s">"is already on loan"</span>)</div>
+
+    <div style="font-size:13pt;font-weight:700;color:#007BA6;margin-bottom:10px;">Common mistakes when writing OOP code</div>
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table class="cx-tbl">
+        <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+        <tr><td>Leaving out <code>self</code> in a method header</td><td>TypeError: method takes 0 positional arguments but 1 was given</td><td>Make <code>self</code> the first parameter</td></tr>
+        <tr><td>Writing <code>__Title = Title</code> in the constructor</td><td>Creates a local variable; later an AttributeError</td><td>Write <code>self.__Title = Title</code></td></tr>
+        <tr><td>Forgetting <code>return</code> in a getter</td><td>The method gives back None</td><td>Add <code>return self.__Title</code></td></tr>
+        <tr><td>Reading <code>MyBook.__Title</code> in the main program</td><td>AttributeError — the attribute is private</td><td>Call the getter <code>MyBook.GetTitle()</code></td></tr>
+        <tr><td>Passing the wrong number of arguments</td><td>TypeError: missing required positional argument</td><td>Match the constructor's parameter list</td></tr>
+      </table>
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">The design process in five steps:</strong> (1) pick out nouns and verbs; (2) decide which nouns are classes and which are attributes; (3) look for "is-a" and "has-a" relationships; (4) draw the class diagram with data types, constructors and methods; (5) write the classes and a main program, then test them.
+    </div>
+  </div>
+
+  <!-- Activity 17 — MCQ correct=b -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 17 — Multiple choice — spot the bug</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">This code raises an AttributeError on the last line. Why?</div>
+    <div class="code" style="margin-bottom:14px;"><span class="k">class</span> <span class="f">Member</span>:
+    <span class="k">def</span> <span class="f">__init__</span>(self, Name):
+        __Name = Name
+    <span class="k">def</span> <span class="f">GetName</span>(self):
+        <span class="k">return</span> self.__Name
+
+M = <span class="f">Member</span>(<span class="s">"Ali"</span>)
+<span class="f">print</span>(M.<span class="f">GetName</span>())</div>
+    <div id="opts17">
+      <div class="opt" onclick="pickOpt(17,'a',this)">a) GetName() should be called with self: M.GetName(self)</div>
+      <div class="opt" onclick="pickOpt(17,'b',this)">b) The constructor writes <code>__Name = Name</code>, which makes a local variable instead of an attribute — it should be <code>self.__Name = Name</code></div>
+      <div class="opt" onclick="pickOpt(17,'c',this)">c) The getter cannot use a private attribute</div>
+      <div class="opt" onclick="pickOpt(17,'d',this)">d) Member must inherit from another class before it can be used</div>
+    </div>
+    <div class="fb" id="fb17"></div>
+  </div>
+
+  <!-- Activity 18 — match error to fix -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9654; Activity 18 — Match the problem to its fix</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Each symptom below came from a student's OOP code. Use the dropdowns to choose the fix.</div>
+    <div id="match2">
+      <div class="match-row"><div class="match-term">Getter prints None</div><select class="match-sel" data-ans="ret"><option value="">— choose —</option><option value="self">Add self as the first parameter of the method</option><option value="getter">Use the public getter instead of the private attribute</option><option value="ret">Add a return statement to the method</option><option value="args">Pass every value the constructor's parameters need</option><option value="selfattr">Write self. in front of the attribute name</option></select></div>
+      <div class="match-row"><div class="match-term">"takes 0 positional arguments but 1 was given"</div><select class="match-sel" data-ans="self"><option value="">— choose —</option><option value="self">Add self as the first parameter of the method</option><option value="getter">Use the public getter instead of the private attribute</option><option value="ret">Add a return statement to the method</option><option value="args">Pass every value the constructor's parameters need</option><option value="selfattr">Write self. in front of the attribute name</option></select></div>
+      <div class="match-row"><div class="match-term">MyDVD.__Minutes gives AttributeError</div><select class="match-sel" data-ans="getter"><option value="">— choose —</option><option value="self">Add self as the first parameter of the method</option><option value="getter">Use the public getter instead of the private attribute</option><option value="ret">Add a return statement to the method</option><option value="args">Pass every value the constructor's parameters need</option><option value="selfattr">Write self. in front of the attribute name</option></select></div>
+      <div class="match-row"><div class="match-term">"missing 1 required positional argument"</div><select class="match-sel" data-ans="args"><option value="">— choose —</option><option value="self">Add self as the first parameter of the method</option><option value="getter">Use the public getter instead of the private attribute</option><option value="ret">Add a return statement to the method</option><option value="args">Pass every value the constructor's parameters need</option><option value="selfattr">Write self. in front of the attribute name</option></select></div>
+      <div class="match-row"><div class="match-term">Value set in constructor is "lost"</div><select class="match-sel" data-ans="selfattr"><option value="">— choose —</option><option value="self">Add self as the first parameter of the method</option><option value="getter">Use the public getter instead of the private attribute</option><option value="ret">Add a return statement to the method</option><option value="args">Pass every value the constructor's parameters need</option><option value="selfattr">Write self. in front of the attribute name</option></select></div>
+    </div>
+    <button class="match-btn" id="match2-btn" onclick="checkMatch2()">&#10003; Check my answers</button>
+    <div class="match-result" id="match2-res"></div>
+  </div>
+
+  <!-- Activity 19 — MCQ correct=a -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 19 — Multiple choice — trace the whole system</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">Using all the classes on this page, what is output?</div>
+    <div class="code" style="margin-bottom:14px;">Lib = <span class="f">Library</span>()
+Lib.<span class="f">AddItem</span>(<span class="f">Book</span>(<span class="s">"Dune"</span>, <span class="s">"B01"</span>, <span class="s">"Herbert"</span>))
+Lib.<span class="f">AddItem</span>(<span class="f">DVD</span>(<span class="s">"Up"</span>, <span class="s">"D01"</span>, <span class="v">96</span>))
+Lib.<span class="f">AddItem</span>(<span class="f">Book</span>(<span class="s">"Holes"</span>, <span class="s">"B02"</span>, <span class="s">"Sachar"</span>))
+Item = Lib.<span class="f">FindItem</span>(<span class="s">"D01"</span>)
+Item.<span class="f">Borrow</span>()
+Lib.<span class="f">FindItem</span>(<span class="s">"B02"</span>).<span class="f">Borrow</span>()
+<span class="f">print</span>(Lib.<span class="f">CountOnLoan</span>(), Item.<span class="f">GetLoanDays</span>())</div>
+    <div id="opts19">
+      <div class="opt" onclick="pickOpt(19,'a',this)">a) 2 7</div>
+      <div class="opt" onclick="pickOpt(19,'b',this)">b) 2 21</div>
+      <div class="opt" onclick="pickOpt(19,'c',this)">c) 1 7</div>
+      <div class="opt" onclick="pickOpt(19,'d',this)">d) 3 14</div>
+    </div>
+    <div class="fb" id="fb19"></div>
+  </div>
+
+  <!-- Activity 20 — drag paragraph -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 20 — Review: fill in the gaps</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Drag a word into each gap to complete the paragraph. Two chips are not needed.</div>
+    <div class="drag-bank" id="bank20">
+      <div class="drag-chip" draggable="true">containment</div>
+      <div class="drag-chip" draggable="true">adjectives</div>
+      <div class="drag-chip" draggable="true">verbs</div>
+      <div class="drag-chip" draggable="true">private</div>
+      <div class="drag-chip" draggable="true">inheritance</div>
+      <div class="drag-chip" draggable="true">nouns</div>
+      <div class="drag-chip" draggable="true">public</div>
+      <div class="drag-chip" draggable="true">recursion</div>
+    </div>
+    <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:16px 20px;font-size:14pt;line-height:2.6;">
+      When designing a solution, the <span id="dz20a" class="drop-zone">?</span> in the problem description usually become classes or attributes, and the <span id="dz20b" class="drop-zone">?</span> usually become methods. Attributes are made <span id="dz20c" class="drop-zone">?</span> and are accessed through <span id="dz20d" class="drop-zone">?</span> getter and setter methods. If one class is a special kind of another, the design uses <span id="dz20e" class="drop-zone">?</span>; if one class stores objects of another, it uses <span id="dz20f" class="drop-zone">?</span>.
+    </div>
+    <button class="check-btn" id="btn20" onclick="checkDrop20()">&#10003; Check my answers</button>
+    <div class="drag-result" id="res20"></div>
+  </div>
+
+  <!-- Activity 21 — order design steps -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 21 — Order the design process</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Drag the steps into the order a programmer should follow when solving a problem with OOP.</div>
+    <div class="drag-bank" id="bank21">
+      <div class="drag-chip" draggable="true" style="white-space:normal;max-width:430px;line-height:1.4;">Write the classes and a main program, then test them</div>
+      <div class="drag-chip" draggable="true" style="white-space:normal;max-width:430px;line-height:1.4;">Look for "is-a" and "has-a" relationships between the classes</div>
+      <div class="drag-chip" draggable="true" style="white-space:normal;max-width:430px;line-height:1.4;">Pick out the nouns and verbs in the problem description</div>
+      <div class="drag-chip" draggable="true" style="white-space:normal;max-width:430px;line-height:1.4;">Draw the class diagram with data types, constructors and methods</div>
+      <div class="drag-chip" draggable="true" style="white-space:normal;max-width:430px;line-height:1.4;">Decide which nouns are classes and which are attributes</div>
+    </div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:16px 20px;overflow-x:auto;">
+      <div class="slot-line"><span class="ln">1</span><span id="dz21a" class="drop-zone" style="min-width:430px;">?</span></div>
+      <div class="slot-line"><span class="ln">2</span><span id="dz21b" class="drop-zone" style="min-width:430px;">?</span></div>
+      <div class="slot-line"><span class="ln">3</span><span id="dz21c" class="drop-zone" style="min-width:430px;">?</span></div>
+      <div class="slot-line"><span class="ln">4</span><span id="dz21d" class="drop-zone" style="min-width:430px;">?</span></div>
+      <div class="slot-line"><span class="ln">5</span><span id="dz21e" class="drop-zone" style="min-width:430px;">?</span></div>
+    </div>
+    <button class="check-btn" id="btn21" onclick="checkOrder21()">&#10003; Check my order</button>
+    <div class="drag-result" id="res21"></div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div style="background:#007BA6;border-radius:8px;padding:28px 32px;margin-bottom:20px;">
+  <div style="font-size:16pt;font-weight:700;color:#ffffff;margin-bottom:16px;">&#10003; Summary — CIE 9618 Topic 20.1: Designing Classes &amp; Writing OOP Code</div>
+  <div class="g2" style="gap:10px;">
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Finding classes:</strong> nouns with their own data and behaviour become classes; single-value nouns become attributes; verbs become methods. Ignore nouns the program never needs.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Designing a class:</strong> choose private attributes and data types, decide constructor parameters and default values, then add getters, setters (with validation) and action methods.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Diagram to code:</strong> <code style="background:rgba(0,0,0,0.2);color:#fff;">- Title : STRING</code> &rarr; <code style="background:rgba(0,0,0,0.2);color:#fff;">self.__Title</code>; <code style="background:rgba(0,0,0,0.2);color:#fff;">+ GetTitle() : STRING</code> &rarr; a method that returns it. Every method takes <code style="background:rgba(0,0,0,0.2);color:#fff;">self</code>.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Inheritance in design:</strong> move shared members into a superclass, keep special members in subclasses, and override methods whose behaviour differs (e.g. GetLoanDays).</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Containment in design:</strong> a class that "has" many objects stores them in a private list and provides methods such as AddItem, FindItem and CountOnLoan that call the objects' public methods.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Main program:</strong> instantiate the objects, call their methods with dot notation, and use returned values (Booleans, objects or None) to decide what to do next.</div>
+  </div>
+</div>
+
+</div></div>
+<script>
+// ══════════════════════════════════════════════════
+//  MCQ — pure JS, auto-submits on click
+// ══════════════════════════════════════════════════
+var mcqChosen = {};
+var MCQ_CORRECT = { 3:'c', 5:'a', 8:'b', 13:'d', 14:'c', 17:'b', 19:'a' };
+var MCQ_FB = {
+  3:{
+    ok:'&#10003; Correct! The program only needs one value about the author — their name — and an author has no behaviour of its own in this system. A single value describing a book is an attribute, not a class.',
+    a:'&#10007; Not every noun becomes an attribute: library, book and DVD become classes. "Author" is an attribute because it is just one value that describes a book.',
+    b:'&#10007; Classes can represent non-physical things too (e.g. a Loan or an Account). Author is an attribute because the program stores only one value about it and it has no behaviour.',
+    d:'&#10007; Speed is not the reason. Author is an attribute because it is a single value describing a book, with no data or behaviour of its own.'
+  },
+  5:{
+    ok:'&#10003; Correct! "+" means public, "GetFines()" is a method with no parameters except self, and ": REAL" is the type it returns. So it is a public getter that returns a real number.',
+    b:'&#10007; The brackets in GetFines() show it is a method, not an attribute. It should be a public method that returns the fines value.',
+    c:'&#10007; The "+" means public. A double underscore in front of the name would make the method private.',
+    d:'&#10007; The diagram shows GetFines() takes no parameters and returns a REAL — that is a getter, not a setter.'
+  },
+  8:{
+    ok:'&#10003; Correct! The first Borrow() succeeds and returns True. The second finds the book already on loan and returns False. ReturnBook() sets OnLoan back to False, so IsOnLoan() prints False.',
+    a:'&#10007; The second Borrow() returns False, because the book is already on loan after the first call.',
+    c:'&#10007; A new book starts with OnLoan = False, so the first Borrow() succeeds and returns True.',
+    d:'&#10007; ReturnBook() sets OnLoan back to False, so the last line prints False, not True.'
+  },
+  13:{
+    ok:'&#10003; Correct! Book overrides GetLoanDays() to return 21 and DVD overrides it to return 7. The plain LibraryItem uses the superclass default of 14. This is polymorphism in action.',
+    a:'&#10007; Book and DVD each override GetLoanDays(), so their own versions run (21 and 7). Only the plain LibraryItem uses 14.',
+    b:'&#10007; Each object uses the GetLoanDays() of its own class: Book 21, DVD 7, LibraryItem 14.',
+    c:'&#10007; LibraryItem is an ordinary class, so objects can be created from it. It uses its default loan period of 14 days.'
+  },
+  14:{
+    ok:'&#10003; Correct! The loop checks every item, finds no ID equal to "X99", and finishes. The method then reaches return None, so None is printed.',
+    a:'&#10007; An item is only returned when its ID matches. No item has the ID X99, so the method returns None.',
+    b:'&#10007; The method loops through the list with for, so no index can go out of range. When nothing matches it returns None.',
+    d:'&#10007; FindItem only returns an item whose ID matches. None of them do, so it returns None.'
+  },
+  17:{
+    ok:'&#10003; Correct! Without self., the constructor creates a local variable called __Name that disappears when __init__ ends. The object never gets the attribute, so self.__Name in GetName() raises an AttributeError.',
+    a:'&#10007; Python passes self automatically, so M.GetName() is correct. The bug is in the constructor: __Name = Name should be self.__Name = Name.',
+    c:'&#10007; Methods inside the class are allowed to use private attributes — that is what getters are for. The problem is that the attribute was never created, because the constructor is missing self.',
+    d:'&#10007; A class does not need to inherit from anything. The constructor should write self.__Name = Name.'
+  },
+  19:{
+    ok:'&#10003; Correct! The DVD (D01) and the book Holes (B02) are both borrowed, so CountOnLoan() returns 2. Item refers to the DVD, whose GetLoanDays() returns 7.',
+    b:'&#10007; Item holds the DVD found with "D01", and DVD overrides GetLoanDays() to return 7, not 21.',
+    c:'&#10007; Two items were borrowed: the DVD through Item.Borrow(), and Holes through Lib.FindItem("B02").Borrow(). CountOnLoan() returns 2.',
+    d:'&#10007; Dune was never borrowed, so only 2 items are on loan. Item is a DVD, so its loan period is 7.'
+  }
+};
+function pickOpt(qNum, letter, el) {
+  if (mcqChosen[qNum] && mcqChosen[qNum].locked) return;
+  var box = el.parentNode;
+  box.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  mcqChosen[qNum] = { letter: letter, locked: false };
+  submitMCQ(qNum, letter);
+}
+
+function submitMCQ(qNum, letter) {
+  if (mcqChosen[qNum] && mcqChosen[qNum].locked) return;
+  var correct = MCQ_CORRECT[qNum];
+  var isOk = (letter === correct);
+  var box = document.getElementById('opts' + qNum);
+  var fb  = document.getElementById('fb' + qNum);
+  if (box) {
+    box.querySelectorAll('.opt').forEach(function(el) {
+      el.classList.add('locked');
+      var m = el.getAttribute('onclick').match(/pickOpt\(\d+,'([a-d])'/);
+      var v = m ? m[1] : '';
+      if (v === correct)           el.classList.add(isOk ? 'correct' : 'reveal');
+      else if (v === letter && !isOk) el.classList.add('wrong');
+    });
+  }
+  if (fb) {
+    fb.style.display = 'block';
+    var fd = MCQ_FB[qNum];
+    fb.className = 'fb ' + (isOk ? 'fb-ok' : 'fb-bad');
+    fb.innerHTML = isOk ? fd.ok : (fd[letter] || '&#10007; Not quite — the correct answer is highlighted in green above.');
+  }
+  if (mcqChosen[qNum]) mcqChosen[qNum].locked = true;
+}
+
+
+
+// ══════════════════════════════════════════════════
+//  WORD CHIPS
+// ══════════════════════════════════════════════════
+var woptChosen = {};
+var WOPT_CORRECT = { 4:'d', 9:'a' };
+var WOPT_FB = {
+  4:{
+    ok:'&#10003; Correct! IsFull can only ever be true or false, so BOOLEAN is the right data type.',
+    a:'&#10007; Storing "yes"/"no" as text is error-prone. A value that is only ever true or false should be a <strong>BOOLEAN</strong>.',
+    b:'&#10007; An INTEGER would suit a count such as the number booked. A true/false value should be a <strong>BOOLEAN</strong>.',
+    c:'&#10007; REAL is for numbers with a decimal part. A true/false value should be a <strong>BOOLEAN</strong>.'
+  },
+  9:{
+    ok:'&#10003; Correct! <code>if NewSize &gt; 0:</code> only accepts positive sizes, so the attribute can never be set to 0 or a negative number.',
+    b:'&#10007; <code>NewSize &lt; 0</code> would accept only negative sizes — the opposite of what is needed. Use <code>&gt;</code>.',
+    c:'&#10007; <code>NewSize == 0</code> would only accept zero, which is not a valid size. Use <code>&gt;</code>.',
+    d:'&#10007; A single = is assignment, not comparison, and causes a syntax error in an if statement. Use <code>&gt;</code>.'
+  }
+};
+function pickWopt(qNum, letter, el) {
+  if (woptChosen[qNum] && woptChosen[qNum].locked) return;
+  var container = el.parentNode;
+  container.querySelectorAll('.wopt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  woptChosen[qNum] = { letter: letter, locked: false };
+  var correct = WOPT_CORRECT[qNum];
+  var isOk = (letter === correct);
+  container.querySelectorAll('.wopt').forEach(function(w) {
+    w.classList.add('locked');
+    var m = w.getAttribute('onclick').match(/pickWopt\(\d+,'([a-d])'/);
+    var v = m ? m[1] : '';
+    if (v === correct)           w.classList.add(isOk ? 'correct' : 'reveal');
+    else if (v === letter && !isOk) w.classList.add('wrong');
+  });
+  var fb = document.getElementById('fb' + qNum);
+  if (fb) {
+    fb.style.display = 'block';
+    var fd = WOPT_FB[qNum];
+    fb.className = 'fb ' + (isOk ? 'fb-ok' : 'fb-bad');
+    fb.innerHTML = isOk ? fd.ok : (fd[letter] || '&#10007; Not quite — the correct answer is highlighted above.');
+  }
+  woptChosen[qNum] = { letter: letter, locked: true };
+}
+
+// ══════════════════════════════════════════════════
+//  TRUE / FALSE
+// ══════════════════════════════════════════════════
+var TF_DATA = {
+  1:{ ok:'&#10003; Correct — False! Attributes with a fixed starting value, such as OnLoan = False, are set in the constructor without being parameters.', bad:'&#10007; This is False. Only values that differ between objects are parameters; defaults such as OnLoan = False are simply set in the constructor.' },
+  2:{ ok:'&#10003; True! IDs are labels, not quantities. Storing them as strings also keeps letters and leading zeros, e.g. "B01".', bad:'&#10007; This is True. An ID is never used in calculations and can contain letters or leading zeros, so STRING is best.' },
+  3:{ ok:'&#10003; Correct — False! Only add setters for values that should change. Title and ItemID have no setter, so they cannot be altered by mistake.', bad:'&#10007; This is False. Leaving out a setter makes an attribute read-only — often exactly what the design needs.' },
+  4:{ ok:'&#10003; True! "-" marks private members and "+" marks public members.', bad:'&#10007; This is True. In class diagrams "-" means private and "+" means public.' },
+  5:{ ok:'&#10003; True! Python passes the object into every method as its first argument, so self must be in the method header.', bad:'&#10007; This is True. Without self, Python raises a TypeError when the method is called on an object.' },
+  6:{ ok:'&#10003; Correct — False! No return type means the method is a procedure: it carries out an action and does not send a value back.', bad:'&#10007; This is False. A method with no return type in the diagram is a procedure, so it does not return a value.' },
+  7:{ ok:'&#10003; True! The constructor is where every attribute gets its starting value, including defaults.', bad:'&#10007; This is True. All attributes, including those with default values, are set up in __init__.' },
+  8:{ ok:'&#10003; Correct — False! Methods are called on the object: MyBook.Borrow(). Book is the class, not the particular book.', bad:'&#10007; This is False. Call methods on the object (MyBook.Borrow()), not on the class name.' },
+  9:{ ok:'&#10003; Correct — False! A library is not a kind of item. It <em>has</em> items, so containment is the right relationship.', bad:'&#10007; This is False. Library "has" items rather than "is an" item, so it uses containment, not inheritance.' },
+  10:{ ok:'&#10003; True! Every subclass object is also a LibraryItem, so one list can store a mixture and treat them all the same way.', bad:'&#10007; This is True. Because Book, DVD and Magazine all inherit from LibraryItem, they can share one list.' },
+  11:{ ok:'&#10003; Correct — False! __OnLoan is private to LibraryItem. Library is a different class, so it must call the public getter IsOnLoan().', bad:'&#10007; This is False. Private attributes can only be used inside their own class. Library must call Item.IsOnLoan().' },
+  12:{ ok:'&#10003; True! FindItem returns the object itself, so a method can be called on the result straight away.', bad:'&#10007; This is True. The returned value is the item object, so .Borrow() can be called on it directly (as long as it is not None).' }
+};
+function doTF(n, userAns, correctAns) {
+  var row = document.getElementById('tf' + n);
+  if (!row || row.classList.contains('done')) return;
+  row.classList.add('done');
+  var isOk = (userAns === correctAns);
+  row.querySelectorAll('.tf-btn').forEach(function(b) {
+    var bT = b.textContent.trim() === 'True';
+    if (bT === userAns)             b.className = isOk ? 'tf-btn ok' : 'tf-btn bad';
+    if (!isOk && bT === correctAns) b.className = 'tf-btn show';
+  });
+  var fb = document.createElement('div');
+  fb.style.cssText = 'margin-top:8px;padding:10px 14px;border-radius:6px;font-size:13pt;line-height:1.6;font-family:Lato,sans-serif;';
+  fb.style.background = isOk ? '#e8f5e9' : '#ffebee';
+  fb.style.color      = isOk ? '#1b5e20' : '#7f0000';
+  fb.style.border     = isOk ? '1px solid #81c784' : '1px solid #ef9a9a';
+  fb.innerHTML = isOk ? TF_DATA[n].ok : TF_DATA[n].bad;
+  row.appendChild(fb);
+}
+
+// ══════════════════════════════════════════════════
+//  MATCH ACTIVITIES
+// ══════════════════════════════════════════════════
+function runMatch(matchId, btnId, resId, okMsg, badMsg) {
+  var rows = document.querySelectorAll('#' + matchId + ' .match-row');
+  var allOk = true;
+  rows.forEach(function(row) {
+    row.classList.remove('ok','bad');
+    var sel = row.querySelector('.match-sel');
+    if (sel.value === sel.getAttribute('data-ans')) row.classList.add('ok');
+    else { row.classList.add('bad'); allOk = false; }
+  });
+  var res = document.getElementById(resId);
+  res.style.display = 'block';
+  if (allOk) {
+    res.className = 'match-result fb fb-ok';
+    res.innerHTML = '&#10003; ' + okMsg;
+    document.getElementById(btnId).disabled = true;
+    rows.forEach(function(r){ r.querySelector('.match-sel').disabled = true; });
+  } else {
+    res.className = 'match-result fb fb-bad';
+    res.innerHTML = '&#10007; ' + badMsg;
+  }
+}
+
+
+function checkMatch1() {
+  runMatch('match1','match1-btn','match1-res',
+    'All correct! Noun analysis finds the classes, attributes and methods; a class diagram records them; data types and access modifiers describe each member; and relationships link the classes.',
+    'One or more are wrong — check those in red. Think about which term is a process, which is a drawing, and which describe parts of the drawing.');
+}
+function checkMatch2() {
+  runMatch('match2','match2-btn','match2-res',
+    'All correct! These five mistakes cause most problems in OOP practical work — check for them every time your code will not run.',
+    'One or more are wrong. Hint: None comes from a missing return; "positional arguments" errors point to self or the constructor\'s parameters; AttributeError points to private attributes or a missing self.');
+}
+// ══════════════════════════════════════════════════
+//  DRAG & DROP ENGINE
+// ══════════════════════════════════════════════════
+var _drag = null;
+document.addEventListener('dragstart', function(e) {
+  var t = e.target;
+  if (t.classList.contains('drag-chip') && !t.classList.contains('locked')) {
+    _drag = t; e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', t.textContent);
+  }
+});
+document.addEventListener('dragover', function(e) {
+  var t = e.target;
+  while (t && t !== document.body) {
+    if (t.classList.contains('drop-zone') || t.classList.contains('drag-bank') || t.classList.contains('sort-zone')) {
+      e.preventDefault(); t.classList.add('drag-over'); return;
+    }
+    t = t.parentNode;
+  }
+});
+document.addEventListener('dragleave', function(e) {
+  var t = e.target; if (t && t.classList) t.classList.remove('drag-over');
+});
+document.addEventListener('drop', function(e) {
+  e.preventDefault(); if (!_drag) return;
+  var tgt = e.target;
+  while (tgt && tgt !== document.body) {
+    if (tgt.classList.contains('drop-zone') || tgt.classList.contains('drag-bank') || tgt.classList.contains('sort-zone')) break;
+    tgt = tgt.parentNode;
+  }
+  if (!tgt || tgt === document.body) return;
+  tgt.classList.remove('drag-over');
+  if (tgt.classList.contains('drop-zone')) {
+    var displaced = tgt.querySelector('.drag-chip');
+    if (displaced) {
+      var oid = displaced.getAttribute('data-origin') || '';
+      var ori = oid ? document.getElementById(oid) : _drag.parentNode;
+      if (ori) ori.appendChild(displaced);
+      displaced.removeAttribute('data-origin');
+    }
+    _drag.setAttribute('data-origin', _drag.parentNode.id || '');
+    _drag.parentNode.removeChild(_drag);
+    tgt.appendChild(_drag);
+  } else {
+    if (tgt === _drag.parentNode) { _drag = null; return; }
+    _drag.removeAttribute('data-origin');
+    _drag.parentNode.removeChild(_drag);
+    tgt.appendChild(_drag);
+  }
+  _drag = null;
+});
+
+function getDZ(id) { var z=document.getElementById(id); var c=z?z.querySelector('.drag-chip'):null; return c?c.textContent.trim():''; }
+function getSort(id) { var z=document.getElementById(id); if(!z)return[]; return Array.from(z.querySelectorAll('.drag-chip')).map(function(c){return c.textContent.trim();}); }
+
+// ══════════════════════════════════════════════════
+//  SLOT CHECKER — used by activities 7, 11, 16, 18, 22
+// ══════════════════════════════════════════════════
+var DONE = {};
+function lockChips(n, ids) {
+  document.querySelectorAll('#bank' + n + ' .drag-chip').forEach(function(c){ c.classList.add('locked'); });
+  ids.forEach(function(id){ var z=document.getElementById(id); if(z) z.querySelectorAll('.drag-chip').forEach(function(c){ c.classList.add('locked'); }); });
+}
+function checkSlots(n, ids, ans, okMsg, hints, emptyMsg) {
+  if (DONE[n]) return;
+  var vals = ids.map(getDZ);
+  var res = document.getElementById('res' + n);
+  res.style.display = 'block';
+  if (vals.some(function(v){ return v === ''; })) {
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; ' + emptyMsg;
+    return;
+  }
+  var wrong = [];
+  vals.forEach(function(v, i){ if (v !== ans[i]) wrong.push(hints[i]); });
+  if (wrong.length === 0) {
+    DONE[n] = true;
+    document.getElementById('btn' + n).disabled = true;
+    lockChips(n, ids);
+    res.className = 'drag-result fb fb-ok';
+    res.innerHTML = '&#10003; ' + okMsg;
+  } else {
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; Not quite. ' + wrong.slice(0, 2).join(' ') + (wrong.length > 2 ? ' (' + (wrong.length - 2) + ' more to fix.)' : '');
+  }
+}
+
+function checkCols(n, cols, names, total, okMsg, tip) {
+  if (DONE[n]) return;
+  var res = document.getElementById('res' + n);
+  res.style.display = 'block';
+  var count = 0, wrong = [];
+  Object.keys(cols).forEach(function(zone) {
+    getSort(zone).forEach(function(v) {
+      count++;
+      if (cols[zone].indexOf(v) === -1) {
+        var home = Object.keys(cols).filter(function(z){ return cols[z].indexOf(v) !== -1; })[0];
+        wrong.push('“' + v + '” belongs in <strong>' + names[home] + '</strong>.');
+      }
+    });
+  });
+  if (count < total) { res.className='drag-result fb fb-bad'; res.innerHTML='&#10007; Drag all ' + total + ' chips into a column before checking.'; return; }
+  if (wrong.length === 0) {
+    DONE[n] = true; document.getElementById('btn' + n).disabled = true;
+    Object.keys(cols).forEach(function(z){ document.querySelectorAll('#' + z + ' .drag-chip').forEach(function(c){ c.classList.add('locked'); }); });
+    res.className = 'drag-result fb fb-ok'; res.innerHTML = '&#10003; ' + okMsg;
+  } else {
+    res.className = 'drag-result fb fb-bad'; res.innerHTML = '&#10007; ' + wrong.slice(0, 2).join(' ') + ' ' + tip;
+  }
+}
+
+function checkSort2() {
+  checkCols(2, { 'sort2-cls': ['Member','Session'], 'sort2-att': ['name','start time','maximum size'], 'sort2-met': ['book','cancel'] },
+    { 'sort2-cls':'Class', 'sort2-att':'Attribute', 'sort2-met':'Method' }, 7,
+    'All correct! Member and Session each have their own data and behaviour, so they are classes. Name, start time and maximum size are single values (attributes). Book and cancel are actions (methods).',
+    'Tip: ask "does it have its own data and behaviour?" (class), "is it one value?" (attribute) or "is it an action?" (method).');
+}
+function checkSort11() {
+  checkCols(11, { 'sort11-sup': ['BookingID','BookingDate','Cancel()'], 'sort11-court': ['Sport','GetSport()'], 'sort11-pool': ['Lanes','GetLanes()'] },
+    { 'sort11-sup':'Booking (superclass)', 'sort11-court':'Court only', 'sort11-pool':'Pool only' }, 7,
+    'All correct! Members shared by both kinds of booking go in the superclass; Sport belongs only to Court and Lanes only to Pool, each with its own getter.',
+    'Tip: if both Court and Pool need it, write it once in Booking. If only one needs it, put it in that subclass.');
+}
+function checkDrop7() {
+  checkSlots(7, ['dz7a','dz7b','dz7c','dz7d'],
+    ['self.__Booked = 0','return self.__StartTime','self.__Booked < self.__MaxSize','self.__Booked = self.__Booked + 1'],
+    'All correct! Booked starts at 0, the getter returns the start time, AddBooking() checks there is still space, and if so adds one to Booked before returning True.',
+    ['Gap 1: Booked always starts at 0 — <strong>self.__Booked = 0</strong>.',
+     'Gap 2: a getter must <strong>return</strong> the value, not print it.',
+     'Gap 3: a booking is only allowed while <strong>self.__Booked &lt; self.__MaxSize</strong>.',
+     'Gap 4: when there is space, add one to the count — <strong>self.__Booked = self.__Booked + 1</strong>.'],
+    'Drag a chip into every gap before checking.');
+}
+function checkDrop12() {
+  checkSlots(12, ['dz12a','dz12b','dz12c','dz12d'],
+    ['LibraryItem','super().__init__(Title, ItemID)','self.__IssueNo = IssueNo','return 3'],
+    'All correct! Magazine inherits from LibraryItem, calls the superclass constructor to set Title, ItemID and OnLoan, stores its own IssueNo, and overrides GetLoanDays() to return 3.',
+    ['Gap 1: a magazine is a <strong>LibraryItem</strong>, not a Book.',
+     'Gap 2: set up the inherited attributes with <strong>super().__init__(Title, ItemID)</strong>.',
+     'Gap 3: store the new private attribute — <strong>self.__IssueNo = IssueNo</strong>.',
+     'Gap 4: magazines are lent for 3 days — <strong>return 3</strong>.'],
+    'Drag a chip into every gap before checking.');
+}
+function checkOrder15() {
+  checkSlots(15, ['dz15a','dz15b','dz15c','dz15d','dz15e'],
+    ['def TotalGoals(self):','Total = 0','for P in self.__Players:','Total = Total + P.GetGoals()','return Total'],
+    'Correct! Start the total at 0, loop through every contained Player object, add each player\'s goals using the public getter, and return the total after the loop.',
+    ['Line 1: the method header comes first.',
+     'Line 2: the running total must start at 0 before the loop.',
+     'Line 3: loop through the contained Player objects.',
+     'Line 4: inside the loop, add each player\'s goals through their getter.',
+     'Line 5: return the total once the loop has finished.'],
+    'Drag a line into every slot before checking.');
+}
+function checkDrop20() {
+  checkSlots(20, ['dz20a','dz20b','dz20c','dz20d','dz20e','dz20f'],
+    ['nouns','verbs','private','public','inheritance','containment'],
+    'All correct — that is the whole design process in one paragraph!',
+    ['Gap 1: classes and attributes come from the <strong>nouns</strong>.',
+     'Gap 2: methods come from the <strong>verbs</strong>.',
+     'Gap 3: attributes are made <strong>private</strong>.',
+     'Gap 4: getters and setters are <strong>public</strong>.',
+     'Gap 5: "is a special kind of" means <strong>inheritance</strong>.',
+     'Gap 6: "stores objects of another class" means <strong>containment</strong>.'],
+    'Drag a word into every gap before checking.');
+}
+function checkOrder21() {
+  checkSlots(21, ['dz21a','dz21b','dz21c','dz21d','dz21e'],
+    ['Pick out the nouns and verbs in the problem description',
+     'Decide which nouns are classes and which are attributes',
+     'Look for "is-a" and "has-a" relationships between the classes',
+     'Draw the class diagram with data types, constructors and methods',
+     'Write the classes and a main program, then test them'],
+    'Correct order! Analyse the description, choose the classes, find the relationships, draw the full class diagram, then code and test.',
+    ['Step 1: start by reading the problem and picking out nouns and verbs.',
+     'Step 2: then decide which nouns are classes and which are attributes.',
+     'Step 3: once you have the classes, look for "is-a" and "has-a" links.',
+     'Step 4: record everything in a detailed class diagram.',
+     'Step 5: only then write and test the code.'],
+    'Drag a step into every slot before checking.');
+}
+</script>
+</body>
+</html>
